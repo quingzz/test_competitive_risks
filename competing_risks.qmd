@@ -351,7 +351,7 @@ odin_result <- data.frame(
 plot_helper(odin_result)
 ```
 
-## deSolve output
+## deSolve (competing risks)
 
 ```{r}
 #| code-fold: true
@@ -389,6 +389,57 @@ parameters <- c(
 times <- seq(0, simulationDuration)
 ode_mod <- ode(y = desolveInitialValues, times = times, parms = parameters, func = transition_func) 
 ode_mod <- as.data.frame(ode_mod)
+```
+
+```{r}
+#| code-fold: true
+#| code-summary: "Plot output"
+plot_helper(ode_mod)
+```
+
+## deSolve (multinomial)
+
+```{r}
+#| code-fold: true
+#| code-summary: "Run deSolve model"
+transition_func <- function(t, state, param){
+  with(as.list( c(state, param) ), {
+    dS = - beta * S * (IR + ID)/N
+    
+    dIR = 0.5*beta * S * (IR + ID)/N - rate*IR
+    dID = 0.5*beta * S * (IR + ID)/N - d_rate*ID
+    
+    dR = rate*IR
+    
+    # handle I -> D transition
+    dD = d_rate*ID
+
+    list(c(dS, dIR, dID, dR, dD))
+  })
+}
+
+desolveInitialValues <- c(
+  S = mod1_config$S, 
+  IR = 0.5*mod1_config$I,
+  ID = 0.5*mod1_config$I,
+  R = 0,
+  D = 0
+)
+
+# ====== settings ======== 
+parameters <- c(
+  beta = mod1_config$beta,
+  N = mod1_config$N,
+  rate = mod1_config$rate, # recovery rate
+  d_rate = mod1_config$d_rate, # death rate
+  r_prob = mod1_config$r_prob,
+  d_prob = mod1_config$d_prob
+)
+
+times <- seq(0, simulationDuration)
+ode_mod <- ode(y = desolveInitialValues, times = times, parms = parameters, func = transition_func) 
+ode_mod <- as.data.frame(ode_mod) %>% 
+  mutate(I = ID + IR)
 ```
 
 ```{r}
@@ -568,14 +619,14 @@ plot_helper(ode_mod)
 
 ## Different maximum dwell time (no normalization)  {#sec-no-normalize}
 
-Test scenario where maximum dwell time of R\>D, normalization not applied, and proportion that goes to Z and W at equilibrium differs
+Test scenario where maximum dwell time of R\>D, normalization not applied
 
 ```{r}
 #| code-fold: true
 #| code-summary: "Model config"
 
 mod3_config <- list(
-  rate = 0.2,
+  rate = 0.1,
   d_rate = 0.2,
   beta = 0.4,
   S = 950, 
@@ -583,8 +634,8 @@ mod3_config <- list(
   R = 0,
   D = 0,
   N = 1000,
-  r_prob = 0.3,
-  d_prob = 0.7
+  r_prob = 0.5,
+  d_prob = 0.5
 )
 ```
 
@@ -640,7 +691,51 @@ odin_result <- data.frame(
 
 plot_helper(odin_result)
 ```
+## deSolve (competing risks)
 
+```{r}
+#| code-fold: true
+#| code-summary: "Run deSolve model"
+
+transition_func <- function(t, state, param){
+  with(as.list( c(state, param) ), {
+    dS = - beta * S * I/N
+
+    dI = beta * S * I/N - rate*I - d_rate*I
+    dR = rate*I 
+    
+    # handle I -> D transition
+    dD = d_rate*I
+
+    list(c(dS, dI, dR, dD))
+  })
+}
+
+desolveInitialValues <- c(
+  S = mod3_config$S, 
+  I = mod3_config$I,
+  R = mod3_config$R,
+  D = mod3_config$D
+)
+
+# ====== settings ======== 
+parameters <- c(
+  beta = mod3_config$beta,
+  N = mod3_config$N,
+  rate = mod3_config$rate, # recovery rate
+  d_rate = mod3_config$d_rate # death rate
+)
+
+times <- seq(0, simulationDuration)
+ode_mod <- ode(y = desolveInitialValues, times = times, parms = parameters, func = transition_func) 
+ode_mod <- as.data.frame(ode_mod)
+```
+
+```{r}
+#| code-fold: true
+#| code-summary: "Plot output"
+plot_helper(ode_mod)
+```
 
 ## deSolve (multinomial)
 
@@ -665,8 +760,8 @@ transition_func <- function(t, state, param){
 
 desolveInitialValues <- c(
   S = mod3_config$S, 
-  IR = mod3_config$r_prob*mod2_config$I,
-  ID = mod3_config$r_prob*mod2_config$I,
+  IR = mod3_config$r_prob*mod3_config$I,
+  ID = mod3_config$r_prob*mod3_config$I,
   R = 0,
   D = 0
 )
