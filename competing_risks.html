@@ -1,0 +1,1002 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.2.475">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Test competing risks</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1.6em;
+  vertical-align: middle;
+}
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+
+<script src="competing_risks_files/libs/clipboard/clipboard.min.js"></script>
+<script src="competing_risks_files/libs/quarto-html/quarto.js"></script>
+<script src="competing_risks_files/libs/quarto-html/popper.min.js"></script>
+<script src="competing_risks_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="competing_risks_files/libs/quarto-html/anchor.min.js"></script>
+<link href="competing_risks_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="competing_risks_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="competing_risks_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="competing_risks_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="competing_risks_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+</head>
+
+<body>
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+<div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+  <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#proposed-formulation" id="toc-proposed-formulation" class="nav-link active" data-scroll-target="#proposed-formulation">Proposed formulation</a></li>
+  <li><a href="#model-and-helper-functions" id="toc-model-and-helper-functions" class="nav-link" data-scroll-target="#model-and-helper-functions">Model and helper functions</a>
+  <ul class="collapse">
+  <li><a href="#model-implemented-in-odin" id="toc-model-implemented-in-odin" class="nav-link" data-scroll-target="#model-implemented-in-odin">Model implemented in odin</a></li>
+  <li><a href="#helper-functions" id="toc-helper-functions" class="nav-link" data-scroll-target="#helper-functions">Helper functions</a></li>
+  </ul></li>
+  <li><a href="#run-model" id="toc-run-model" class="nav-link" data-scroll-target="#run-model">Run model</a>
+  <ul class="collapse">
+  <li><a href="#sec-normalize" id="toc-sec-normalize" class="nav-link" data-scroll-target="#sec-normalize">Different maximum dwell time (with normalization)</a></li>
+  <li><a href="#same-maximum-dwell-time-in-r-and-d" id="toc-same-maximum-dwell-time-in-r-and-d" class="nav-link" data-scroll-target="#same-maximum-dwell-time-in-r-and-d">Same maximum dwell time in R and D</a></li>
+  <li><a href="#sec-no-normalize" id="toc-sec-no-normalize" class="nav-link" data-scroll-target="#sec-no-normalize">Different maximum dwell time (no normalization)</a></li>
+  </ul></li>
+  </ul>
+</nav>
+</div>
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Test competing risks</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+</header>
+
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># install.packages(</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="co">#   "odin2",</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="co">#   repos = c("https://mrc-ide.r-universe.dev", "https://cloud.r-project.org"))</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(odin2)</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dust2)</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(deSolve)</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(magrittr)</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<section id="proposed-formulation" class="level1">
+<h1>Proposed formulation</h1>
+<p><a href="https://choisy.github.io/competing_risks/competitive%20waiting%20times.html">New formulation</a></p>
+<p>Consider a XYZW model where:</p>
+<ul>
+<li><p>Y-&gt;Z and Y-&gt;W are competitive risks</p></li>
+<li><p>Maximum wait time for Y-&gt;Z (Y-&gt;W) is n (m)</p></li>
+<li><p><span class="math inline">\(n \geq m\)</span> (maximum dwell time of Y-&gt;Z is greater than that of Y-&gt;W)</p></li>
+</ul>
+<p>New probability distribution for Y</p>
+<p><span class="math display">\[
+b_i = \frac{z' p_i + (1 - z) q_i}{\sum^m_j(z'p_j + (1-z)q_j)}
+\]</span></p>
+<p>Where</p>
+<ul>
+<li><p>z is the proportion of people that ends up in Z <u>at equilibrium</u> <span class="math inline">\(z = \frac{Z}{Z + W}\)</span></p></li>
+<li><p>z’ is the proportion of people that ultimately ending up in Z and stays in Y up to m time steps. <span class="math display">\[
+z' = z\frac{\sum_{j=1}^m  p_j}{\sum_{k=1}^n p_k}
+\]</span></p></li>
+</ul>
+<div class="callout-note callout callout-style-default callout-captioned">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-1-contents" aria-controls="callout-1" aria-expanded="true" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+Adjustment for z’ formulation
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-1" class="callout-1-contents callout-collapse collapse show">
+<div class="callout-body-container callout-body">
+<p>z’ originally defined as <span class="math inline">\(z' = \frac{\sum_{j=1}^m zp_j}{\sum_{k=1}^n zp_k} = \frac{\sum_{j=1}^m p_j}{\sum_{k=1}^n p_k}\)</span></p>
+<p>Which is the proportion of people that stays in Y up to m steps, given that they transitioned to Z (i.e.&nbsp;<span class="math inline">\(P(\text{dwell time} \leq m |Z)\)</span> while we need <span class="math inline">\(P(\text{dwell time} \leq m,Z)\)</span></p>
+</div>
+</div>
+</div>
+<div class="callout-important callout callout-style-default callout-captioned">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-2-contents" aria-controls="callout-2" aria-expanded="true" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+Issue with current formulation for <span class="math inline">\(b_i\)</span>
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-2" class="callout-2-contents callout-collapse collapse show">
+<div class="callout-body-container callout-body">
+<p>By normalizing <span class="math inline">\(b_i\)</span> (divide by <span class="math inline">\(\sum^m_j(z'p_j + (1-z)q_j)\)</span>), <span class="math inline">\(\sum^{m}_{j=1}b_j\)</span> is equal to 1 which means <span class="math inline">\(\sum^{n}_{j=1}b_j \geq 1\)</span></p>
+<p>While sum of the dwell time distribution must be 1</p>
+<p><strong>Adjustment:</strong> test both scenarios where normalization (<a href="#sec-normalize">Section&nbsp;3.1</a>) is applied and is not applied (<a href="#sec-no-normalize">Section&nbsp;3.3</a>)</p>
+</div>
+</div>
+</div>
+<p>Outgoing rate from <span class="math inline">\(Y_i\)</span> to <span class="math inline">\(Y_{i+1}\)</span> is then computed by</p>
+<p><span class="math display">\[
+1 - \sum_{j=1}^i {b_j}
+\]</span></p>
+<p>Outgoing rate from <span class="math inline">\(Y_i\)</span> to Z and W is <span class="math display">\[
+\delta_i =  \frac{b_i}{1 - \sum_{j=1}^{i-1} {b_j}}
+\]</span> Where:</p>
+<ul>
+<li><p><span class="math inline">\(\frac{z'p_i}{z'p_i + (1-z)q_i} \delta_i\)</span> goes to Z.</p></li>
+<li><p><span class="math inline">\(\frac{(1-z)q_i}{z'p_i + (1-z)q_i} \delta_i\)</span> goes to W.</p></li>
+</ul>
+<div class="callout-important callout callout-style-default callout-captioned">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-3-contents" aria-controls="callout-3" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+How the current formulation may equates to multinomial when n=m
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-3" class="callout-3-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>Consider the scenario where <span class="math inline">\(n = m\)</span></p>
+<p><span class="math display">\[
+b_i = \frac{zp_i + (1-z)q_i}{\sum_{j=1}^m(zp_j + (1-z)q_j)}
+\]</span></p>
+<p>Since <span class="math inline">\(\sum(zp_j + (1-z)q_j)\)</span> can be rewritten as <span class="math inline">\(z\sum p_j + (1-z)\sum q_j\)</span> which equates to 1</p>
+<p><span class="math display">\[
+b_i = zp_i + (1-z)q_i
+\]</span></p>
+<p>Out transition from <span class="math inline">\(Y_i\)</span> to Z is then <span class="math display">\[
+\frac{zp_i}{zp_i + (1-z)q_i} * \frac{b_i}{1 - \sum_{j=1}^{i} b_j} \\
+= \frac{zp_i}{b_i} * \frac{b_i}{1 - \sum_{j=1}^{i} b_j} \\
+= \frac{zp_i}{1 - \sum_{j=1}^{i} b_j}
+\]</span> Out population from <span class="math inline">\(Y_i\)</span> to Z is then <span class="math display">\[
+n_i*\frac{zp_i}{1 - \sum_{j=1}^{i-1} b_j}
+\]</span></p>
+<p>Recall that <span class="math inline">\(n_i = n_{i-1}*(1 - \sum_{j=1}^{i-1} b_j)\)</span></p>
+<p>Outgoing population from <span class="math inline">\(Y_i\)</span> to Z can then be rewritten as</p>
+<p><span class="math display">\[
+n_{i-1}*z*p_i
+\]</span> Similarly, outgoing population population from <span class="math inline">\(Y_i\)</span> to W can be written as <span class="math display">\[
+n_{i-1}*(1-z)*q_i
+\]</span> Which is equivalent to having 2 sub-compartment chains, one for <span class="math inline">\(n_{i-1}*z\)</span> and the other for <span class="math inline">\(n_{i-1}*(1-z)\)</span>.</p>
+</div>
+</div>
+</div>
+</section>
+<section id="model-and-helper-functions" class="level1">
+<h1>Model and helper functions</h1>
+<section id="model-implemented-in-odin" class="level2">
+<h2 class="anchored" data-anchor-id="model-implemented-in-odin">Model implemented in odin</h2>
+<div class="cell">
+<details>
+<summary>proposed algo implemented in odin</summary>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>sird_mod <span class="ot">&lt;-</span> odin2<span class="sc">::</span><span class="fu">odin</span>(</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  {</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    <span class="co"># equivalent to mathexpr in denim</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">update</span>(S) <span class="ot">&lt;-</span> S <span class="sc">-</span> dt <span class="sc">*</span> S <span class="sc">*</span> beta <span class="sc">*</span> <span class="fu">sum</span>(I) <span class="sc">/</span> N</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">update</span>(I[<span class="dv">1</span>]) <span class="ot">&lt;-</span> dt <span class="sc">*</span> S <span class="sc">*</span> beta<span class="sc">*</span> <span class="fu">sum</span>(I)<span class="sc">/</span>N</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">update</span>(I[<span class="dv">2</span><span class="sc">:</span>r_maxtime]) <span class="ot">&lt;-</span> I[i<span class="dv">-1</span>]<span class="sc">*</span>(<span class="dv">1</span><span class="sc">-</span>transprob[i<span class="dv">-1</span>])</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>    <span class="fu">dim</span>(I_to_R) <span class="ot">&lt;-</span> r_maxtime</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>    <span class="co"># equivalent to delta_i*z'*p_i/(z'*p_i + (1-z)*q_i)</span></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>    I_to_R[<span class="dv">1</span><span class="sc">:</span>r_maxtime] <span class="ot">&lt;-</span> transprob[i]<span class="sc">*</span>I[i]<span class="sc">*</span></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>                           (p_prime<span class="sc">*</span>r_dist[i])<span class="sc">/</span>(p_prime<span class="sc">*</span>r_dist[i] <span class="sc">+</span> (<span class="dv">1</span><span class="sc">-</span>r_prob)<span class="sc">*</span>d_dist[i])</span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>    sum_I_to_R <span class="ot">&lt;-</span> <span class="fu">sum</span>(I_to_R)</span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>    <span class="fu">update</span>(R) <span class="ot">&lt;-</span> R <span class="sc">+</span> sum_I_to_R</span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>    <span class="fu">dim</span>(I_to_D) <span class="ot">&lt;-</span> d_maxtime</span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>    <span class="co"># equivalent to delta_i*(1-z)*q_i/(z'*p_i + (1-z)*q_i)</span></span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>    I_to_D[<span class="dv">1</span><span class="sc">:</span>d_maxtime] <span class="ot">&lt;-</span> transprob[i]<span class="sc">*</span>I[i]<span class="sc">*</span></span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>                           (d_prob<span class="sc">*</span>d_dist[i])<span class="sc">/</span>(p_prime<span class="sc">*</span>r_dist[i] <span class="sc">+</span> (<span class="dv">1</span><span class="sc">-</span>r_prob)<span class="sc">*</span>d_dist[i])</span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>    sum_I_to_D <span class="ot">&lt;-</span> <span class="fu">sum</span>(I_to_D)</span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>    <span class="fu">update</span>(D) <span class="ot">&lt;-</span> D <span class="sc">+</span> sum_I_to_D</span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a>    <span class="co"># print("I to R {sum_I_to_R} I to D {sum_I_to_D}")</span></span>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a>    <span class="co"># initial population</span></span>
+<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a>    <span class="fu">initial</span>(S) <span class="ot">&lt;-</span> S_init</span>
+<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a>    <span class="fu">initial</span>(I[]) <span class="ot">&lt;-</span> I_init[i]</span>
+<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a>    <span class="fu">dim</span>(I) <span class="ot">&lt;-</span> r_maxtime</span>
+<span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a>    <span class="fu">initial</span>(R) <span class="ot">&lt;-</span> R_init</span>
+<span id="cb2-31"><a href="#cb2-31" aria-hidden="true" tabindex="-1"></a>    <span class="fu">initial</span>(D) <span class="ot">&lt;-</span> D_init</span>
+<span id="cb2-32"><a href="#cb2-32" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb2-33"><a href="#cb2-33" aria-hidden="true" tabindex="-1"></a>    <span class="co"># ----- Inputs -------</span></span>
+<span id="cb2-34"><a href="#cb2-34" aria-hidden="true" tabindex="-1"></a>    beta <span class="ot">&lt;-</span> <span class="fu">parameter</span>()</span>
+<span id="cb2-35"><a href="#cb2-35" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb2-36"><a href="#cb2-36" aria-hidden="true" tabindex="-1"></a>    <span class="co"># dwell time distribution of r </span></span>
+<span id="cb2-37"><a href="#cb2-37" aria-hidden="true" tabindex="-1"></a>    r_dist <span class="ot">&lt;-</span> <span class="fu">parameter</span>()</span>
+<span id="cb2-38"><a href="#cb2-38" aria-hidden="true" tabindex="-1"></a>    r_maxtime <span class="ot">&lt;-</span> <span class="fu">parameter</span>()</span>
+<span id="cb2-39"><a href="#cb2-39" aria-hidden="true" tabindex="-1"></a>    r_prob <span class="ot">&lt;-</span> <span class="fu">parameter</span>(<span class="fl">0.5</span>) <span class="co"># proportion that end up in R at equilibrium</span></span>
+<span id="cb2-40"><a href="#cb2-40" aria-hidden="true" tabindex="-1"></a>    <span class="fu">dim</span>(r_dist) <span class="ot">&lt;-</span> r_maxtime</span>
+<span id="cb2-41"><a href="#cb2-41" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb2-42"><a href="#cb2-42" aria-hidden="true" tabindex="-1"></a>    <span class="co"># dwell time distribution of d</span></span>
+<span id="cb2-43"><a href="#cb2-43" aria-hidden="true" tabindex="-1"></a>    d_dist <span class="ot">&lt;-</span> <span class="fu">parameter</span>()</span>
+<span id="cb2-44"><a href="#cb2-44" aria-hidden="true" tabindex="-1"></a>    d_maxtime <span class="ot">&lt;-</span> <span class="fu">parameter</span>()</span>
+<span id="cb2-45"><a href="#cb2-45" aria-hidden="true" tabindex="-1"></a>    d_prob <span class="ot">&lt;-</span> <span class="fu">parameter</span>(<span class="fl">0.5</span>) <span class="co"># proportion that end up in D at equilibrium</span></span>
+<span id="cb2-46"><a href="#cb2-46" aria-hidden="true" tabindex="-1"></a>    <span class="fu">dim</span>(d_dist) <span class="ot">&lt;-</span> d_maxtime</span>
+<span id="cb2-47"><a href="#cb2-47" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb2-48"><a href="#cb2-48" aria-hidden="true" tabindex="-1"></a>    <span class="co"># parameter to control whether to normalize i_dist</span></span>
+<span id="cb2-49"><a href="#cb2-49" aria-hidden="true" tabindex="-1"></a>    normalize_dist <span class="ot">&lt;-</span> <span class="fu">parameter</span>(<span class="cn">TRUE</span>, <span class="at">type=</span><span class="st">"logical"</span>)</span>
+<span id="cb2-50"><a href="#cb2-50" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb2-51"><a href="#cb2-51" aria-hidden="true" tabindex="-1"></a>    <span class="co"># initial populations</span></span>
+<span id="cb2-52"><a href="#cb2-52" aria-hidden="true" tabindex="-1"></a>    S_init <span class="ot">&lt;-</span> <span class="fu">parameter</span>()</span>
+<span id="cb2-53"><a href="#cb2-53" aria-hidden="true" tabindex="-1"></a>    I_init <span class="ot">&lt;-</span> <span class="fu">parameter</span>()</span>
+<span id="cb2-54"><a href="#cb2-54" aria-hidden="true" tabindex="-1"></a>    <span class="fu">dim</span>(I_init) <span class="ot">&lt;-</span>  r_maxtime</span>
+<span id="cb2-55"><a href="#cb2-55" aria-hidden="true" tabindex="-1"></a>    R_init <span class="ot">&lt;-</span> <span class="fu">parameter</span>()</span>
+<span id="cb2-56"><a href="#cb2-56" aria-hidden="true" tabindex="-1"></a>    D_init <span class="ot">&lt;-</span> <span class="fu">parameter</span>()</span>
+<span id="cb2-57"><a href="#cb2-57" aria-hidden="true" tabindex="-1"></a>    N <span class="ot">&lt;-</span> <span class="fu">parameter</span>(<span class="dv">1000</span>)</span>
+<span id="cb2-58"><a href="#cb2-58" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb2-59"><a href="#cb2-59" aria-hidden="true" tabindex="-1"></a>    <span class="co"># ----- Compute out transition here --------</span></span>
+<span id="cb2-60"><a href="#cb2-60" aria-hidden="true" tabindex="-1"></a>    <span class="co"># assume dwell time of r &gt;= dwell time of d</span></span>
+<span id="cb2-61"><a href="#cb2-61" aria-hidden="true" tabindex="-1"></a>    <span class="co"># i_dist is the new dwell time distribution in I</span></span>
+<span id="cb2-62"><a href="#cb2-62" aria-hidden="true" tabindex="-1"></a>    <span class="fu">dim</span>(i_dist) <span class="ot">&lt;-</span> r_maxtime </span>
+<span id="cb2-63"><a href="#cb2-63" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb2-64"><a href="#cb2-64" aria-hidden="true" tabindex="-1"></a>    <span class="co"># prob of people that would end up in R and stay in I up to d_maxtime</span></span>
+<span id="cb2-65"><a href="#cb2-65" aria-hidden="true" tabindex="-1"></a>    <span class="co"># equivalent of z'</span></span>
+<span id="cb2-66"><a href="#cb2-66" aria-hidden="true" tabindex="-1"></a>    p_prime <span class="ot">&lt;-</span> r_prob<span class="sc">*</span><span class="fu">sum</span>(r_dist[<span class="dv">1</span><span class="sc">:</span>d_maxtime])<span class="sc">/</span><span class="fu">sum</span>(r_dist)</span>
+<span id="cb2-67"><a href="#cb2-67" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb2-68"><a href="#cb2-68" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb2-69"><a href="#cb2-69" aria-hidden="true" tabindex="-1"></a>    <span class="co"># distribution normalizer</span></span>
+<span id="cb2-70"><a href="#cb2-70" aria-hidden="true" tabindex="-1"></a>    <span class="fu">dim</span>(normalizer) <span class="ot">&lt;-</span> d_maxtime</span>
+<span id="cb2-71"><a href="#cb2-71" aria-hidden="true" tabindex="-1"></a>    normalizer[] <span class="ot">&lt;-</span> p_prime<span class="sc">*</span>r_dist[i] <span class="sc">+</span> (<span class="dv">1</span><span class="sc">-</span>r_prob)<span class="sc">*</span>d_dist[i]</span>
+<span id="cb2-72"><a href="#cb2-72" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-73"><a href="#cb2-73" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Bug due to sum of i_dist end up greater than 1 when normalized</span></span>
+<span id="cb2-74"><a href="#cb2-74" aria-hidden="true" tabindex="-1"></a>    i_dist[<span class="dv">1</span><span class="sc">:</span>d_maxtime] <span class="ot">&lt;-</span> <span class="cf">if</span> (normalize_dist) (p_prime<span class="sc">*</span>r_dist[i] <span class="sc">+</span> d_prob<span class="sc">*</span>d_dist[i])<span class="sc">/</span><span class="fu">sum</span>(normalizer) </span>
+<span id="cb2-75"><a href="#cb2-75" aria-hidden="true" tabindex="-1"></a>    <span class="cf">else</span> (p_prime<span class="sc">*</span>r_dist[i] <span class="sc">+</span> d_prob<span class="sc">*</span>d_dist[i])</span>
+<span id="cb2-76"><a href="#cb2-76" aria-hidden="true" tabindex="-1"></a>    <span class="co"># for i_dist at timestep &gt; d_maxtime is just the probability distribution of I-&gt;R transition</span></span>
+<span id="cb2-77"><a href="#cb2-77" aria-hidden="true" tabindex="-1"></a>    i_dist[(d_maxtime<span class="sc">+</span><span class="dv">1</span>)<span class="sc">:</span>r_maxtime] <span class="ot">&lt;-</span> (r_prob<span class="sc">-</span>p_prime)<span class="sc">*</span>r_dist[i]</span>
+<span id="cb2-78"><a href="#cb2-78" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-79"><a href="#cb2-79" aria-hidden="true" tabindex="-1"></a>    <span class="co"># transition prob</span></span>
+<span id="cb2-80"><a href="#cb2-80" aria-hidden="true" tabindex="-1"></a>    <span class="fu">dim</span>(transprob) <span class="ot">&lt;-</span> r_maxtime</span>
+<span id="cb2-81"><a href="#cb2-81" aria-hidden="true" tabindex="-1"></a>    transprob[<span class="dv">1</span>] <span class="ot">&lt;-</span> i_dist[i]</span>
+<span id="cb2-82"><a href="#cb2-82" aria-hidden="true" tabindex="-1"></a>    transprob[<span class="dv">2</span><span class="sc">:</span>r_maxtime] <span class="ot">&lt;-</span> i_dist[i]<span class="sc">/</span>(<span class="dv">1</span> <span class="sc">-</span> <span class="fu">sum</span>(i_dist[<span class="dv">1</span><span class="sc">:</span>(i<span class="dv">-1</span>)]))</span>
+<span id="cb2-83"><a href="#cb2-83" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb2-84"><a href="#cb2-84" aria-hidden="true" tabindex="-1"></a>    <span class="co"># browser(phase = "update", when = time&lt;1)</span></span>
+<span id="cb2-85"><a href="#cb2-85" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb2-86"><a href="#cb2-86" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</section>
+<section id="helper-functions" class="level2">
+<h2 class="anchored" data-anchor-id="helper-functions">Helper functions</h2>
+<div class="cell">
+<details>
+<summary>Function to compute transition probability</summary>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>compute_trans_prob <span class="ot">&lt;-</span> <span class="cf">function</span>(rate, <span class="at">timestep=</span><span class="fl">0.05</span>, <span class="at">error_tolerance=</span><span class="fl">0.0001</span>){</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  maxtime <span class="ot">&lt;-</span> timestep</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>  prev_prob <span class="ot">&lt;-</span> <span class="dv">0</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>  transprob <span class="ot">&lt;-</span> <span class="fu">numeric</span>()</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>  cumulative_dist <span class="ot">&lt;-</span> <span class="fu">numeric</span>()</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>  prob_dist <span class="ot">&lt;-</span> <span class="fu">numeric</span>()</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>  <span class="cf">while</span>(<span class="cn">TRUE</span>){</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>     <span class="co"># get current cumulative prob </span></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>     temp_prob <span class="ot">&lt;-</span>  <span class="fu">if_else</span>(</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>       <span class="fu">pexp</span>(maxtime, <span class="at">rate =</span> rate) <span class="sc">&lt;</span> (<span class="dv">1</span> <span class="sc">-</span> error_tolerance), </span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>       <span class="fu">pexp</span>(maxtime, <span class="at">rate =</span> rate), </span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>       <span class="dv">1</span>);</span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>     cumulative_dist <span class="ot">&lt;-</span> <span class="fu">c</span>(cumulative_dist, temp_prob)</span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>     </span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>     <span class="co"># get current prob (pi)</span></span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>     curr_prob <span class="ot">&lt;-</span> temp_prob <span class="sc">-</span> prev_prob</span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>     prob_dist <span class="ot">&lt;-</span> <span class="fu">c</span>(prob_dist, curr_prob)</span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>     </span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a>     <span class="co"># get current transition prob</span></span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a>     curr_transprob <span class="ot">&lt;-</span> curr_prob<span class="sc">/</span>(<span class="dv">1</span><span class="sc">-</span>prev_prob)</span>
+<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a>     transprob <span class="ot">&lt;-</span> <span class="fu">c</span>(transprob, curr_transprob)</span>
+<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a>     </span>
+<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a>     prev_prob <span class="ot">&lt;-</span> temp_prob</span>
+<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a>     maxtime <span class="ot">&lt;-</span> maxtime <span class="sc">+</span> timestep</span>
+<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a>     </span>
+<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a>     <span class="cf">if</span>(temp_prob <span class="sc">==</span> <span class="dv">1</span>){</span>
+<span id="cb3-28"><a href="#cb3-28" aria-hidden="true" tabindex="-1"></a>       <span class="cf">break</span></span>
+<span id="cb3-29"><a href="#cb3-29" aria-hidden="true" tabindex="-1"></a>     }</span>
+<span id="cb3-30"><a href="#cb3-30" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb3-31"><a href="#cb3-31" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb3-32"><a href="#cb3-32" aria-hidden="true" tabindex="-1"></a>  <span class="fu">data.frame</span>(</span>
+<span id="cb3-33"><a href="#cb3-33" aria-hidden="true" tabindex="-1"></a>    <span class="at">prob_dist =</span> prob_dist,</span>
+<span id="cb3-34"><a href="#cb3-34" aria-hidden="true" tabindex="-1"></a>    <span class="at">cumulative_dist =</span> cumulative_dist,</span>
+<span id="cb3-35"><a href="#cb3-35" aria-hidden="true" tabindex="-1"></a>    <span class="at">transprob =</span> transprob</span>
+<span id="cb3-36"><a href="#cb3-36" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb3-37"><a href="#cb3-37" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<div class="cell">
+<details>
+<summary>Helper function for plotting</summary>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>plot_helper <span class="ot">&lt;-</span> <span class="cf">function</span>(data){</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  data <span class="sc">%&gt;%</span> <span class="fu">ggplot</span>() <span class="sc">+</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">x =</span> time, <span class="at">y =</span> S, <span class="at">color =</span> <span class="st">"S"</span>)) <span class="sc">+</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">x =</span> time, <span class="at">y =</span> I, <span class="at">color =</span> <span class="st">"I"</span>)) <span class="sc">+</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">x =</span> time, <span class="at">y =</span> R, <span class="at">color =</span> <span class="st">"R"</span>)) <span class="sc">+</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">x =</span> time, <span class="at">y =</span> D, <span class="at">color =</span> <span class="st">"D"</span>), <span class="at">linetype =</span> <span class="st">"dashed"</span>) <span class="sc">+</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_manual</span>(</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">values =</span> <span class="fu">c</span>(<span class="st">"S"</span> <span class="ot">=</span> <span class="st">"blueviolet"</span>, <span class="st">"I"</span><span class="ot">=</span><span class="st">"red"</span>, <span class="st">"R"</span><span class="ot">=</span><span class="st">"cornflowerblue"</span>, <span class="st">"D"</span><span class="ot">=</span><span class="st">"darkgreen"</span>)</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"Time"</span>,</span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"Number of people"</span></span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</section>
+</section>
+<section id="run-model" class="level1">
+<h1>Run model</h1>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>simulationDuration <span class="ot">&lt;-</span> <span class="dv">75</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>timestep <span class="ot">&lt;-</span> <span class="fl">0.05</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<section id="sec-normalize" class="level2">
+<h2 class="anchored" data-anchor-id="sec-normalize">Different maximum dwell time (with normalization)</h2>
+<p>Test scenario where maximum dwell time of R&gt;D, normalization applied</p>
+<div class="cell">
+<details>
+<summary>Model config</summary>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>mod1_config <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">rate =</span> <span class="fl">0.1</span>,</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">d_rate =</span> <span class="fl">0.2</span>,</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">beta =</span> <span class="fl">0.4</span>,</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">S =</span> <span class="dv">950</span>, </span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">I =</span> <span class="dv">50</span>,</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">R =</span> <span class="dv">0</span>,</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">D =</span> <span class="dv">0</span>,</span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">N =</span> <span class="dv">1000</span></span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-1-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-1" role="tab" aria-controls="tabset-1-1" aria-selected="true" href="">Proposed algo</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-2" role="tab" aria-controls="tabset-1-2" aria-selected="false" href="">deSolve output</a></li></ul>
+<div class="tab-content">
+<div id="tabset-1-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-1-1-tab">
+<div class="cell">
+<details>
+<summary>Model set up</summary>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># generate discrete dwell time distribution for I -&gt; R</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>r_dist <span class="ot">&lt;-</span> <span class="fu">compute_trans_prob</span>(<span class="at">rate =</span> mod1_config<span class="sc">$</span>rate, <span class="at">timestep =</span> timestep)</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>r_dist <span class="ot">&lt;-</span> r_dist<span class="sc">$</span>prob_dist</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>d_dist <span class="ot">&lt;-</span> <span class="fu">compute_trans_prob</span>(<span class="at">rate =</span> mod1_config<span class="sc">$</span>d_rate, <span class="at">timestep =</span> timestep)</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>d_dist <span class="ot">&lt;-</span> d_dist<span class="sc">$</span>prob_dist</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>odin_pars <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">beta =</span>  mod1_config<span class="sc">$</span>beta,</span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">N =</span>  mod1_config<span class="sc">$</span>N,</span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">r_dist =</span> r_dist,</span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">r_maxtime =</span> <span class="fu">length</span>(r_dist),</span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">d_dist =</span> d_dist,</span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>  <span class="at">d_maxtime =</span> <span class="fu">length</span>(d_dist),</span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>  <span class="at">S_init =</span> mod1_config<span class="sc">$</span>S,</span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a>  <span class="at">I_init =</span> <span class="fu">array</span>( <span class="fu">c</span>(mod1_config<span class="sc">$</span>I, <span class="fu">rep</span>(<span class="dv">0</span>, <span class="fu">length</span>(r_dist)<span class="sc">-</span><span class="dv">1</span>)) ),</span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a>  <span class="at">R_init =</span> mod1_config<span class="sc">$</span>R,</span>
+<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a>  <span class="at">D_init =</span> mod1_config<span class="sc">$</span>D,</span>
+<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a>  <span class="at">normalize_dist=</span><span class="cn">TRUE</span></span>
+<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<div class="cell">
+<details>
+<summary>Run odin model</summary>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>sird <span class="ot">&lt;-</span> <span class="fu">dust_system_create</span>(sird_mod, odin_pars, <span class="at">dt =</span> timestep)</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="fu">dust_system_set_state_initial</span>(sird)</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>t_seq <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="dv">0</span>, simulationDuration, <span class="fl">0.25</span>)</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>out <span class="ot">&lt;-</span> <span class="fu">dust_system_simulate</span>(sird, t_seq)</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>out <span class="ot">&lt;-</span> <span class="fu">dust_unpack_state</span>(sird, out)</span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>odin_result <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">time =</span> t_seq,</span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">S =</span> out<span class="sc">$</span>S,</span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">I =</span> <span class="fu">colSums</span>(out<span class="sc">$</span>I),</span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">R =</span> out<span class="sc">$</span>R,</span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>  <span class="at">D =</span> out<span class="sc">$</span>D</span>
+<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_helper</span>(odin_result)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="competing_risks_files/figure-html/unnamed-chunk-8-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</div>
+<div id="tabset-1-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-2-tab">
+<div class="cell">
+<details>
+<summary>Run deSolve model</summary>
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>transition_func <span class="ot">&lt;-</span> <span class="cf">function</span>(t, state, param){</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">with</span>(<span class="fu">as.list</span>( <span class="fu">c</span>(state, param) ), {</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>    dS <span class="ot">=</span> <span class="sc">-</span> beta <span class="sc">*</span> S <span class="sc">*</span> I<span class="sc">/</span>N</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>    dI <span class="ot">=</span> beta <span class="sc">*</span> S <span class="sc">*</span> I<span class="sc">/</span>N <span class="sc">-</span> rate<span class="sc">*</span>I <span class="sc">-</span> d_rate<span class="sc">*</span>I</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>    dR <span class="ot">=</span> rate<span class="sc">*</span>I </span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>    <span class="co"># handle I -&gt; D transition</span></span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>    dD <span class="ot">=</span> d_rate<span class="sc">*</span>I</span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>    <span class="fu">list</span>(<span class="fu">c</span>(dS, dI, dR, dD))</span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a>  })</span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a>desolveInitialValues <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
+<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a>  <span class="at">S =</span> mod1_config<span class="sc">$</span>S, </span>
+<span id="cb9-17"><a href="#cb9-17" aria-hidden="true" tabindex="-1"></a>  <span class="at">I =</span> mod1_config<span class="sc">$</span>I,</span>
+<span id="cb9-18"><a href="#cb9-18" aria-hidden="true" tabindex="-1"></a>  <span class="at">R =</span> mod1_config<span class="sc">$</span>R,</span>
+<span id="cb9-19"><a href="#cb9-19" aria-hidden="true" tabindex="-1"></a>  <span class="at">D =</span> mod1_config<span class="sc">$</span>D</span>
+<span id="cb9-20"><a href="#cb9-20" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb9-21"><a href="#cb9-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-22"><a href="#cb9-22" aria-hidden="true" tabindex="-1"></a><span class="co"># ====== settings ======== </span></span>
+<span id="cb9-23"><a href="#cb9-23" aria-hidden="true" tabindex="-1"></a>parameters <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
+<span id="cb9-24"><a href="#cb9-24" aria-hidden="true" tabindex="-1"></a>  <span class="at">beta =</span> mod1_config<span class="sc">$</span>beta,</span>
+<span id="cb9-25"><a href="#cb9-25" aria-hidden="true" tabindex="-1"></a>  <span class="at">N =</span> mod1_config<span class="sc">$</span>N,</span>
+<span id="cb9-26"><a href="#cb9-26" aria-hidden="true" tabindex="-1"></a>  <span class="at">rate =</span> mod1_config<span class="sc">$</span>rate, <span class="co"># recovery rate</span></span>
+<span id="cb9-27"><a href="#cb9-27" aria-hidden="true" tabindex="-1"></a>  <span class="at">d_rate =</span> mod1_config<span class="sc">$</span>d_rate <span class="co"># death rate</span></span>
+<span id="cb9-28"><a href="#cb9-28" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb9-29"><a href="#cb9-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-30"><a href="#cb9-30" aria-hidden="true" tabindex="-1"></a>times <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="dv">0</span>, simulationDuration)</span>
+<span id="cb9-31"><a href="#cb9-31" aria-hidden="true" tabindex="-1"></a>ode_mod <span class="ot">&lt;-</span> <span class="fu">ode</span>(<span class="at">y =</span> desolveInitialValues, <span class="at">times =</span> times, <span class="at">parms =</span> parameters, <span class="at">func =</span> transition_func) </span>
+<span id="cb9-32"><a href="#cb9-32" aria-hidden="true" tabindex="-1"></a>ode_mod <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(ode_mod)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<div class="cell">
+<details>
+<summary>Plot output</summary>
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_helper</span>(ode_mod)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="competing_risks_files/figure-html/unnamed-chunk-10-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="same-maximum-dwell-time-in-r-and-d" class="level2">
+<h2 class="anchored" data-anchor-id="same-maximum-dwell-time-in-r-and-d">Same maximum dwell time in R and D</h2>
+<p>Run model with normalizing for <span class="math inline">\(b_i\)</span>, expect that this scenario to have the same output as multinomial</p>
+<div class="cell">
+<details>
+<summary>Model config</summary>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>mod2_config <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">rate =</span> <span class="fl">0.2</span>,</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">d_rate =</span> <span class="fl">0.2</span>,</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">beta =</span> <span class="fl">0.4</span>,</span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">S =</span> <span class="dv">950</span>, </span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">I =</span> <span class="dv">50</span>,</span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">R =</span> <span class="dv">0</span>,</span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">D =</span> <span class="dv">0</span>,</span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">N =</span> <span class="dv">1000</span></span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-2-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-1" role="tab" aria-controls="tabset-2-1" aria-selected="true" href="">Proposed algo</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-2-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-2" role="tab" aria-controls="tabset-2-2" aria-selected="false" href="">deSolve (competitive risks)</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-2-3-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-3" role="tab" aria-controls="tabset-2-3" aria-selected="false" href="">deSolve (multinomial)</a></li></ul>
+<div class="tab-content">
+<div id="tabset-2-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-2-1-tab">
+<div class="cell">
+<details>
+<summary>Model set up</summary>
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="co"># generate discrete dwell time distribution for I -&gt; R</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>r_dist <span class="ot">&lt;-</span> <span class="fu">compute_trans_prob</span>(<span class="at">rate =</span> mod2_config<span class="sc">$</span>rate, <span class="at">timestep =</span> timestep)</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>r_dist <span class="ot">&lt;-</span> r_dist<span class="sc">$</span>prob_dist</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a><span class="co"># generate discrete dwell time distribution for I -&gt; D</span></span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>d_dist <span class="ot">&lt;-</span> <span class="fu">compute_trans_prob</span>(<span class="at">rate =</span> mod2_config<span class="sc">$</span>d_rate, <span class="at">timestep =</span> timestep)</span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>d_dist <span class="ot">&lt;-</span> d_dist<span class="sc">$</span>prob_dist</span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>odin_pars <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">beta =</span> mod2_config<span class="sc">$</span>beta,</span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">N =</span> mod2_config<span class="sc">$</span>N,</span>
+<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">r_dist =</span> r_dist,</span>
+<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">r_maxtime =</span> <span class="fu">length</span>(r_dist),</span>
+<span id="cb12-14"><a href="#cb12-14" aria-hidden="true" tabindex="-1"></a>  <span class="at">d_dist =</span> d_dist,</span>
+<span id="cb12-15"><a href="#cb12-15" aria-hidden="true" tabindex="-1"></a>  <span class="at">d_maxtime =</span> <span class="fu">length</span>(d_dist),</span>
+<span id="cb12-16"><a href="#cb12-16" aria-hidden="true" tabindex="-1"></a>  <span class="at">S_init =</span> mod2_config<span class="sc">$</span>S,</span>
+<span id="cb12-17"><a href="#cb12-17" aria-hidden="true" tabindex="-1"></a>  <span class="at">I_init =</span> <span class="fu">array</span>( <span class="fu">c</span>(mod2_config<span class="sc">$</span>I, <span class="fu">rep</span>(<span class="dv">0</span>, <span class="fu">length</span>(r_dist)<span class="sc">-</span><span class="dv">1</span>)) ),</span>
+<span id="cb12-18"><a href="#cb12-18" aria-hidden="true" tabindex="-1"></a>  <span class="at">R_init =</span> mod2_config<span class="sc">$</span>R,</span>
+<span id="cb12-19"><a href="#cb12-19" aria-hidden="true" tabindex="-1"></a>  <span class="at">D_init =</span> mod2_config<span class="sc">$</span>D</span>
+<span id="cb12-20"><a href="#cb12-20" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<div class="cell">
+<details>
+<summary>Run odin model</summary>
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>sird <span class="ot">&lt;-</span> <span class="fu">dust_system_create</span>(sird_mod, odin_pars, <span class="at">dt =</span> timestep)</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="fu">dust_system_set_state_initial</span>(sird)</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>t_seq <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="dv">0</span>, simulationDuration, <span class="fl">0.5</span>)</span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>out <span class="ot">&lt;-</span> <span class="fu">dust_system_simulate</span>(sird, t_seq)</span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>out <span class="ot">&lt;-</span> <span class="fu">dust_unpack_state</span>(sird, out)</span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a>odin_result <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">time =</span> t_seq,</span>
+<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">S =</span> out<span class="sc">$</span>S,</span>
+<span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">I =</span> <span class="fu">colSums</span>(out<span class="sc">$</span>I),</span>
+<span id="cb13-13"><a href="#cb13-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">R =</span> out<span class="sc">$</span>R,</span>
+<span id="cb13-14"><a href="#cb13-14" aria-hidden="true" tabindex="-1"></a>  <span class="at">D =</span> out<span class="sc">$</span>D</span>
+<span id="cb13-15"><a href="#cb13-15" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb13-16"><a href="#cb13-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-17"><a href="#cb13-17" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_helper</span>(odin_result)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="competing_risks_files/figure-html/run%20model-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</div>
+<div id="tabset-2-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-2-2-tab">
+<div class="cell">
+<details>
+<summary>Run deSolve model</summary>
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>transition_func <span class="ot">&lt;-</span> <span class="cf">function</span>(t, state, param){</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">with</span>(<span class="fu">as.list</span>( <span class="fu">c</span>(state, param) ), {</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>    dS <span class="ot">=</span> <span class="sc">-</span> beta <span class="sc">*</span> S <span class="sc">*</span> I<span class="sc">/</span>N</span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>    dI <span class="ot">=</span> beta <span class="sc">*</span> S <span class="sc">*</span> I<span class="sc">/</span>N <span class="sc">-</span> rate<span class="sc">*</span>I <span class="sc">-</span> d_rate<span class="sc">*</span>I</span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>    dR <span class="ot">=</span> rate<span class="sc">*</span>I </span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>    <span class="co"># handle I -&gt; D transition</span></span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a>    dD <span class="ot">=</span> d_rate<span class="sc">*</span>I</span>
+<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a>    <span class="fu">list</span>(<span class="fu">c</span>(dS, dI, dR, dD))</span>
+<span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a>  })</span>
+<span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb14-14"><a href="#cb14-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-15"><a href="#cb14-15" aria-hidden="true" tabindex="-1"></a>desolveInitialValues <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
+<span id="cb14-16"><a href="#cb14-16" aria-hidden="true" tabindex="-1"></a>  <span class="at">S =</span> mod2_config<span class="sc">$</span>S, </span>
+<span id="cb14-17"><a href="#cb14-17" aria-hidden="true" tabindex="-1"></a>  <span class="at">I =</span> mod2_config<span class="sc">$</span>I,</span>
+<span id="cb14-18"><a href="#cb14-18" aria-hidden="true" tabindex="-1"></a>  <span class="at">R =</span> mod2_config<span class="sc">$</span>R,</span>
+<span id="cb14-19"><a href="#cb14-19" aria-hidden="true" tabindex="-1"></a>  <span class="at">D =</span> mod2_config<span class="sc">$</span>D</span>
+<span id="cb14-20"><a href="#cb14-20" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb14-21"><a href="#cb14-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-22"><a href="#cb14-22" aria-hidden="true" tabindex="-1"></a><span class="co"># ====== settings ======== </span></span>
+<span id="cb14-23"><a href="#cb14-23" aria-hidden="true" tabindex="-1"></a>parameters <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
+<span id="cb14-24"><a href="#cb14-24" aria-hidden="true" tabindex="-1"></a>  <span class="at">beta =</span> mod2_config<span class="sc">$</span>beta,</span>
+<span id="cb14-25"><a href="#cb14-25" aria-hidden="true" tabindex="-1"></a>  <span class="at">N =</span> mod2_config<span class="sc">$</span>N,</span>
+<span id="cb14-26"><a href="#cb14-26" aria-hidden="true" tabindex="-1"></a>  <span class="at">rate =</span> mod2_config<span class="sc">$</span>rate, <span class="co"># recovery rate</span></span>
+<span id="cb14-27"><a href="#cb14-27" aria-hidden="true" tabindex="-1"></a>  <span class="at">d_rate =</span> mod2_config<span class="sc">$</span>d_rate <span class="co"># death rate</span></span>
+<span id="cb14-28"><a href="#cb14-28" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb14-29"><a href="#cb14-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-30"><a href="#cb14-30" aria-hidden="true" tabindex="-1"></a>times <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="dv">0</span>, simulationDuration)</span>
+<span id="cb14-31"><a href="#cb14-31" aria-hidden="true" tabindex="-1"></a>ode_mod <span class="ot">&lt;-</span> <span class="fu">ode</span>(<span class="at">y =</span> desolveInitialValues, <span class="at">times =</span> times, <span class="at">parms =</span> parameters, <span class="at">func =</span> transition_func) </span>
+<span id="cb14-32"><a href="#cb14-32" aria-hidden="true" tabindex="-1"></a>ode_mod <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(ode_mod)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<div class="cell">
+<details>
+<summary>Plot output</summary>
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_helper</span>(ode_mod)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="competing_risks_files/figure-html/unnamed-chunk-14-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</div>
+<div id="tabset-2-3" class="tab-pane" role="tabpanel" aria-labelledby="tabset-2-3-tab">
+<div class="cell">
+<details>
+<summary>Run deSolve model</summary>
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>transition_func <span class="ot">&lt;-</span> <span class="cf">function</span>(t, state, param){</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">with</span>(<span class="fu">as.list</span>( <span class="fu">c</span>(state, param) ), {</span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>    dS <span class="ot">=</span> <span class="sc">-</span> beta <span class="sc">*</span> S <span class="sc">*</span> (IR <span class="sc">+</span> ID)<span class="sc">/</span>N</span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>    dIR <span class="ot">=</span> <span class="fl">0.5</span><span class="sc">*</span>beta <span class="sc">*</span> S <span class="sc">*</span> (IR <span class="sc">+</span> ID)<span class="sc">/</span>N <span class="sc">-</span> rate<span class="sc">*</span>IR</span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>    dID <span class="ot">=</span> <span class="fl">0.5</span><span class="sc">*</span>beta <span class="sc">*</span> S <span class="sc">*</span> (IR <span class="sc">+</span> ID)<span class="sc">/</span>N <span class="sc">-</span> d_rate<span class="sc">*</span>ID</span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a>    dR <span class="ot">=</span> rate<span class="sc">*</span>IR</span>
+<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a>    <span class="co"># handle I -&gt; D transition</span></span>
+<span id="cb16-11"><a href="#cb16-11" aria-hidden="true" tabindex="-1"></a>    dD <span class="ot">=</span> d_rate<span class="sc">*</span>ID</span>
+<span id="cb16-12"><a href="#cb16-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-13"><a href="#cb16-13" aria-hidden="true" tabindex="-1"></a>    <span class="fu">list</span>(<span class="fu">c</span>(dS, dIR, dID, dR, dD))</span>
+<span id="cb16-14"><a href="#cb16-14" aria-hidden="true" tabindex="-1"></a>  })</span>
+<span id="cb16-15"><a href="#cb16-15" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb16-16"><a href="#cb16-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-17"><a href="#cb16-17" aria-hidden="true" tabindex="-1"></a>desolveInitialValues <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
+<span id="cb16-18"><a href="#cb16-18" aria-hidden="true" tabindex="-1"></a>  <span class="at">S =</span> mod2_config<span class="sc">$</span>S, </span>
+<span id="cb16-19"><a href="#cb16-19" aria-hidden="true" tabindex="-1"></a>  <span class="at">IR =</span> <span class="fl">0.5</span><span class="sc">*</span>mod2_config<span class="sc">$</span>I,</span>
+<span id="cb16-20"><a href="#cb16-20" aria-hidden="true" tabindex="-1"></a>  <span class="at">ID =</span> <span class="fl">0.5</span><span class="sc">*</span>mod2_config<span class="sc">$</span>I,</span>
+<span id="cb16-21"><a href="#cb16-21" aria-hidden="true" tabindex="-1"></a>  <span class="at">R =</span> <span class="dv">0</span>,</span>
+<span id="cb16-22"><a href="#cb16-22" aria-hidden="true" tabindex="-1"></a>  <span class="at">D =</span> <span class="dv">0</span></span>
+<span id="cb16-23"><a href="#cb16-23" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb16-24"><a href="#cb16-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-25"><a href="#cb16-25" aria-hidden="true" tabindex="-1"></a><span class="co"># ====== settings ======== </span></span>
+<span id="cb16-26"><a href="#cb16-26" aria-hidden="true" tabindex="-1"></a>parameters <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
+<span id="cb16-27"><a href="#cb16-27" aria-hidden="true" tabindex="-1"></a>  <span class="at">beta =</span> mod2_config<span class="sc">$</span>beta,</span>
+<span id="cb16-28"><a href="#cb16-28" aria-hidden="true" tabindex="-1"></a>  <span class="at">N =</span> mod2_config<span class="sc">$</span>N,</span>
+<span id="cb16-29"><a href="#cb16-29" aria-hidden="true" tabindex="-1"></a>  <span class="at">rate =</span> mod2_config<span class="sc">$</span>rate, <span class="co"># recovery rate</span></span>
+<span id="cb16-30"><a href="#cb16-30" aria-hidden="true" tabindex="-1"></a>  <span class="at">d_rate =</span> mod2_config<span class="sc">$</span>d_rate <span class="co"># death rate</span></span>
+<span id="cb16-31"><a href="#cb16-31" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb16-32"><a href="#cb16-32" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-33"><a href="#cb16-33" aria-hidden="true" tabindex="-1"></a>times <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="dv">0</span>, simulationDuration)</span>
+<span id="cb16-34"><a href="#cb16-34" aria-hidden="true" tabindex="-1"></a>ode_mod <span class="ot">&lt;-</span> <span class="fu">ode</span>(<span class="at">y =</span> desolveInitialValues, <span class="at">times =</span> times, <span class="at">parms =</span> parameters, <span class="at">func =</span> transition_func) </span>
+<span id="cb16-35"><a href="#cb16-35" aria-hidden="true" tabindex="-1"></a>ode_mod <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(ode_mod) <span class="sc">%&gt;%</span> </span>
+<span id="cb16-36"><a href="#cb16-36" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">I =</span> ID <span class="sc">+</span> IR)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<div class="cell">
+<details>
+<summary>Plot output</summary>
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_helper</span>(ode_mod)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="competing_risks_files/figure-html/unnamed-chunk-16-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="sec-no-normalize" class="level2">
+<h2 class="anchored" data-anchor-id="sec-no-normalize">Different maximum dwell time (no normalization)</h2>
+<p>Test scenario where maximum dwell time of R&gt;D, normalization not applied, and proportion that goes to Z and W at equilibrium differs</p>
+<div class="cell">
+<details>
+<summary>Model config</summary>
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>mod3_config <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">rate =</span> <span class="fl">0.2</span>,</span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">d_rate =</span> <span class="fl">0.2</span>,</span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">beta =</span> <span class="fl">0.4</span>,</span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">S =</span> <span class="dv">950</span>, </span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">I =</span> <span class="dv">50</span>,</span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">R =</span> <span class="dv">0</span>,</span>
+<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">D =</span> <span class="dv">0</span>,</span>
+<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">N =</span> <span class="dv">1000</span>,</span>
+<span id="cb18-10"><a href="#cb18-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">r_prob =</span> <span class="fl">0.3</span>,</span>
+<span id="cb18-11"><a href="#cb18-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">d_prob =</span> <span class="fl">0.7</span></span>
+<span id="cb18-12"><a href="#cb18-12" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-3-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-3-1" role="tab" aria-controls="tabset-3-1" aria-selected="true" href="">Proposed algo</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-3-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-3-2" role="tab" aria-controls="tabset-3-2" aria-selected="false" href="">deSolve (multinomial)</a></li></ul>
+<div class="tab-content">
+<div id="tabset-3-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-3-1-tab">
+<div class="cell">
+<details>
+<summary>Model set up</summary>
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="co"># generate discrete dwell time distribution for I -&gt; R</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>r_dist <span class="ot">&lt;-</span> <span class="fu">compute_trans_prob</span>(<span class="at">rate =</span> mod3_config<span class="sc">$</span>rate, <span class="at">timestep =</span> timestep)</span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>r_dist <span class="ot">&lt;-</span> r_dist<span class="sc">$</span>prob_dist</span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>d_dist <span class="ot">&lt;-</span> <span class="fu">compute_trans_prob</span>(<span class="at">rate =</span> mod3_config<span class="sc">$</span>d_rate, <span class="at">timestep =</span> timestep)</span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>d_dist <span class="ot">&lt;-</span> d_dist<span class="sc">$</span>prob_dist</span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a>odin_pars <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
+<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">beta =</span>  mod3_config<span class="sc">$</span>beta,</span>
+<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">N =</span>  mod3_config<span class="sc">$</span>N,</span>
+<span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">r_dist =</span> r_dist,</span>
+<span id="cb19-11"><a href="#cb19-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">r_maxtime =</span> <span class="fu">length</span>(r_dist),</span>
+<span id="cb19-12"><a href="#cb19-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">r_prob =</span> mod3_config<span class="sc">$</span>r_prob,</span>
+<span id="cb19-13"><a href="#cb19-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">d_dist =</span> d_dist,</span>
+<span id="cb19-14"><a href="#cb19-14" aria-hidden="true" tabindex="-1"></a>  <span class="at">d_maxtime =</span> <span class="fu">length</span>(d_dist),</span>
+<span id="cb19-15"><a href="#cb19-15" aria-hidden="true" tabindex="-1"></a>  <span class="at">d_prob =</span> mod3_config<span class="sc">$</span>d_prob,</span>
+<span id="cb19-16"><a href="#cb19-16" aria-hidden="true" tabindex="-1"></a>  <span class="at">S_init =</span> mod3_config<span class="sc">$</span>S,</span>
+<span id="cb19-17"><a href="#cb19-17" aria-hidden="true" tabindex="-1"></a>  <span class="at">I_init =</span> <span class="fu">array</span>( <span class="fu">c</span>(mod3_config<span class="sc">$</span>I, <span class="fu">rep</span>(<span class="dv">0</span>, <span class="fu">length</span>(r_dist)<span class="sc">-</span><span class="dv">1</span>)) ),</span>
+<span id="cb19-18"><a href="#cb19-18" aria-hidden="true" tabindex="-1"></a>  <span class="at">R_init =</span> mod3_config<span class="sc">$</span>R,</span>
+<span id="cb19-19"><a href="#cb19-19" aria-hidden="true" tabindex="-1"></a>  <span class="at">D_init =</span> mod3_config<span class="sc">$</span>D,</span>
+<span id="cb19-20"><a href="#cb19-20" aria-hidden="true" tabindex="-1"></a>  <span class="at">normalize_dist =</span> <span class="cn">FALSE</span></span>
+<span id="cb19-21"><a href="#cb19-21" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<div class="cell">
+<details>
+<summary>Run odin model</summary>
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>sird <span class="ot">&lt;-</span> <span class="fu">dust_system_create</span>(sird_mod, odin_pars, <span class="at">dt =</span> timestep)</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a><span class="fu">dust_system_set_state_initial</span>(sird)</span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>t_seq <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="dv">0</span>, simulationDuration, <span class="fl">0.25</span>)</span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a>out <span class="ot">&lt;-</span> <span class="fu">dust_system_simulate</span>(sird, t_seq)</span>
+<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a>out <span class="ot">&lt;-</span> <span class="fu">dust_unpack_state</span>(sird, out)</span>
+<span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-9"><a href="#cb20-9" aria-hidden="true" tabindex="-1"></a>odin_result <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb20-10"><a href="#cb20-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">time =</span> t_seq,</span>
+<span id="cb20-11"><a href="#cb20-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">S =</span> out<span class="sc">$</span>S,</span>
+<span id="cb20-12"><a href="#cb20-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">I =</span> <span class="fu">colSums</span>(out<span class="sc">$</span>I),</span>
+<span id="cb20-13"><a href="#cb20-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">R =</span> out<span class="sc">$</span>R,</span>
+<span id="cb20-14"><a href="#cb20-14" aria-hidden="true" tabindex="-1"></a>  <span class="at">D =</span> out<span class="sc">$</span>D</span>
+<span id="cb20-15"><a href="#cb20-15" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb20-16"><a href="#cb20-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-17"><a href="#cb20-17" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_helper</span>(odin_result)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="competing_risks_files/figure-html/run%20model%20(expect%20error)-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</div>
+<div id="tabset-3-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-3-2-tab">
+<div class="cell">
+<details>
+<summary>Run deSolve model</summary>
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>transition_func <span class="ot">&lt;-</span> <span class="cf">function</span>(t, state, param){</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">with</span>(<span class="fu">as.list</span>( <span class="fu">c</span>(state, param) ), {</span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>    dS <span class="ot">=</span> <span class="sc">-</span> beta <span class="sc">*</span> S <span class="sc">*</span> (IR <span class="sc">+</span> ID)<span class="sc">/</span>N</span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>    dIR <span class="ot">=</span> r_prob<span class="sc">*</span>beta <span class="sc">*</span> S <span class="sc">*</span> (IR <span class="sc">+</span> ID)<span class="sc">/</span>N <span class="sc">-</span> rate<span class="sc">*</span>IR</span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>    dID <span class="ot">=</span> d_prob<span class="sc">*</span>beta <span class="sc">*</span> S <span class="sc">*</span> (IR <span class="sc">+</span> ID)<span class="sc">/</span>N <span class="sc">-</span> d_rate<span class="sc">*</span>ID</span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a>    dR <span class="ot">=</span> rate<span class="sc">*</span>IR</span>
+<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb21-10"><a href="#cb21-10" aria-hidden="true" tabindex="-1"></a>    <span class="co"># handle I -&gt; D transition</span></span>
+<span id="cb21-11"><a href="#cb21-11" aria-hidden="true" tabindex="-1"></a>    dD <span class="ot">=</span> d_rate<span class="sc">*</span>ID</span>
+<span id="cb21-12"><a href="#cb21-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-13"><a href="#cb21-13" aria-hidden="true" tabindex="-1"></a>    <span class="fu">list</span>(<span class="fu">c</span>(dS, dIR, dID, dR, dD))</span>
+<span id="cb21-14"><a href="#cb21-14" aria-hidden="true" tabindex="-1"></a>  })</span>
+<span id="cb21-15"><a href="#cb21-15" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb21-16"><a href="#cb21-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-17"><a href="#cb21-17" aria-hidden="true" tabindex="-1"></a>desolveInitialValues <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
+<span id="cb21-18"><a href="#cb21-18" aria-hidden="true" tabindex="-1"></a>  <span class="at">S =</span> mod3_config<span class="sc">$</span>S, </span>
+<span id="cb21-19"><a href="#cb21-19" aria-hidden="true" tabindex="-1"></a>  <span class="at">IR =</span> mod3_config<span class="sc">$</span>r_prob<span class="sc">*</span>mod2_config<span class="sc">$</span>I,</span>
+<span id="cb21-20"><a href="#cb21-20" aria-hidden="true" tabindex="-1"></a>  <span class="at">ID =</span> mod3_config<span class="sc">$</span>r_prob<span class="sc">*</span>mod2_config<span class="sc">$</span>I,</span>
+<span id="cb21-21"><a href="#cb21-21" aria-hidden="true" tabindex="-1"></a>  <span class="at">R =</span> <span class="dv">0</span>,</span>
+<span id="cb21-22"><a href="#cb21-22" aria-hidden="true" tabindex="-1"></a>  <span class="at">D =</span> <span class="dv">0</span></span>
+<span id="cb21-23"><a href="#cb21-23" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb21-24"><a href="#cb21-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-25"><a href="#cb21-25" aria-hidden="true" tabindex="-1"></a><span class="co"># ====== settings ======== </span></span>
+<span id="cb21-26"><a href="#cb21-26" aria-hidden="true" tabindex="-1"></a>parameters <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
+<span id="cb21-27"><a href="#cb21-27" aria-hidden="true" tabindex="-1"></a>  <span class="at">beta =</span> mod3_config<span class="sc">$</span>beta,</span>
+<span id="cb21-28"><a href="#cb21-28" aria-hidden="true" tabindex="-1"></a>  <span class="at">N =</span> mod3_config<span class="sc">$</span>N,</span>
+<span id="cb21-29"><a href="#cb21-29" aria-hidden="true" tabindex="-1"></a>  <span class="at">rate =</span> mod3_config<span class="sc">$</span>rate, <span class="co"># recovery rate</span></span>
+<span id="cb21-30"><a href="#cb21-30" aria-hidden="true" tabindex="-1"></a>  <span class="at">d_rate =</span> mod3_config<span class="sc">$</span>d_rate, <span class="co"># death rate</span></span>
+<span id="cb21-31"><a href="#cb21-31" aria-hidden="true" tabindex="-1"></a>  <span class="at">r_prob =</span> mod3_config<span class="sc">$</span>r_prob,</span>
+<span id="cb21-32"><a href="#cb21-32" aria-hidden="true" tabindex="-1"></a>  <span class="at">d_prob =</span> mod3_config<span class="sc">$</span>d_prob</span>
+<span id="cb21-33"><a href="#cb21-33" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb21-34"><a href="#cb21-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-35"><a href="#cb21-35" aria-hidden="true" tabindex="-1"></a>times <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="dv">0</span>, simulationDuration)</span>
+<span id="cb21-36"><a href="#cb21-36" aria-hidden="true" tabindex="-1"></a>ode_mod <span class="ot">&lt;-</span> <span class="fu">ode</span>(<span class="at">y =</span> desolveInitialValues, <span class="at">times =</span> times, <span class="at">parms =</span> parameters, <span class="at">func =</span> transition_func) </span>
+<span id="cb21-37"><a href="#cb21-37" aria-hidden="true" tabindex="-1"></a>ode_mod <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(ode_mod) <span class="sc">%&gt;%</span> </span>
+<span id="cb21-38"><a href="#cb21-38" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">I =</span> ID <span class="sc">+</span> IR)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<div class="cell">
+<details>
+<summary>Plot output</summary>
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_helper</span>(ode_mod)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="competing_risks_files/figure-html/unnamed-chunk-20-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    target: function(trigger) {
+      return trigger.previousElementSibling;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>
