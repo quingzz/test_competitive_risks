@@ -341,7 +341,7 @@ n_{i-1}*(1-z)*q_i
 <span id="cb2-74"><a href="#cb2-74" aria-hidden="true" tabindex="-1"></a>    i_dist[<span class="dv">1</span><span class="sc">:</span>d_maxtime] <span class="ot">&lt;-</span> <span class="cf">if</span> (normalize_dist) (p_prime<span class="sc">*</span>r_dist[i] <span class="sc">+</span> d_prob<span class="sc">*</span>d_dist[i])<span class="sc">/</span><span class="fu">sum</span>(normalizer) </span>
 <span id="cb2-75"><a href="#cb2-75" aria-hidden="true" tabindex="-1"></a>    <span class="cf">else</span> (p_prime<span class="sc">*</span>r_dist[i] <span class="sc">+</span> d_prob<span class="sc">*</span>d_dist[i])</span>
 <span id="cb2-76"><a href="#cb2-76" aria-hidden="true" tabindex="-1"></a>    <span class="co"># for i_dist at timestep &gt; d_maxtime is just the probability distribution of I-&gt;R transition</span></span>
-<span id="cb2-77"><a href="#cb2-77" aria-hidden="true" tabindex="-1"></a>    i_dist[(d_maxtime<span class="sc">+</span><span class="dv">1</span>)<span class="sc">:</span>r_maxtime] <span class="ot">&lt;-</span> (r_prob<span class="sc">-</span>p_prime)<span class="sc">*</span>r_dist[i]</span>
+<span id="cb2-77"><a href="#cb2-77" aria-hidden="true" tabindex="-1"></a>    i_dist[(d_maxtime<span class="sc">+</span><span class="dv">1</span>)<span class="sc">:</span>r_maxtime] <span class="ot">&lt;-</span> r_dist[i]</span>
 <span id="cb2-78"><a href="#cb2-78" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb2-79"><a href="#cb2-79" aria-hidden="true" tabindex="-1"></a>    <span class="co"># transition prob</span></span>
 <span id="cb2-80"><a href="#cb2-80" aria-hidden="true" tabindex="-1"></a>    <span class="fu">dim</span>(transprob) <span class="ot">&lt;-</span> r_maxtime</span>
@@ -433,7 +433,7 @@ n_{i-1}*(1-z)*q_i
 <summary>Model config</summary>
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>mod1_config <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">rate =</span> <span class="fl">0.1</span>,</span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">d_rate =</span> <span class="fl">0.2</span>,</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">d_rate =</span> <span class="fl">0.3</span>,</span>
 <span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">beta =</span> <span class="fl">0.4</span>,</span>
 <span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">S =</span> <span class="dv">950</span>, </span>
 <span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">I =</span> <span class="dv">50</span>,</span>
@@ -787,7 +787,7 @@ n_{i-1}*(1-z)*q_i
 <summary>Model config</summary>
 <div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>mod3_config <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
 <span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">rate =</span> <span class="fl">0.1</span>,</span>
-<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">d_rate =</span> <span class="fl">0.2</span>,</span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">d_rate =</span> <span class="fl">0.3</span>,</span>
 <span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">beta =</span> <span class="fl">0.4</span>,</span>
 <span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">S =</span> <span class="dv">950</span>, </span>
 <span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">I =</span> <span class="dv">50</span>,</span>
@@ -926,7 +926,7 @@ n_{i-1}*(1-z)*q_i
 <span id="cb25-17"><a href="#cb25-17" aria-hidden="true" tabindex="-1"></a>desolveInitialValues <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
 <span id="cb25-18"><a href="#cb25-18" aria-hidden="true" tabindex="-1"></a>  <span class="at">S =</span> mod3_config<span class="sc">$</span>S, </span>
 <span id="cb25-19"><a href="#cb25-19" aria-hidden="true" tabindex="-1"></a>  <span class="at">IR =</span> mod3_config<span class="sc">$</span>r_prob<span class="sc">*</span>mod3_config<span class="sc">$</span>I,</span>
-<span id="cb25-20"><a href="#cb25-20" aria-hidden="true" tabindex="-1"></a>  <span class="at">ID =</span> mod3_config<span class="sc">$</span>r_prob<span class="sc">*</span>mod3_config<span class="sc">$</span>I,</span>
+<span id="cb25-20"><a href="#cb25-20" aria-hidden="true" tabindex="-1"></a>  <span class="at">ID =</span> mod3_config<span class="sc">$</span>d_prob<span class="sc">*</span>mod3_config<span class="sc">$</span>I,</span>
 <span id="cb25-21"><a href="#cb25-21" aria-hidden="true" tabindex="-1"></a>  <span class="at">R =</span> <span class="dv">0</span>,</span>
 <span id="cb25-22"><a href="#cb25-22" aria-hidden="true" tabindex="-1"></a>  <span class="at">D =</span> <span class="dv">0</span></span>
 <span id="cb25-23"><a href="#cb25-23" aria-hidden="true" tabindex="-1"></a>)</span>

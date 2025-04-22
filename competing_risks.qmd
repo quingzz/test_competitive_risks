@@ -199,7 +199,7 @@ sird_mod <- odin2::odin(
     i_dist[1:d_maxtime] <- if (normalize_dist) (p_prime*r_dist[i] + d_prob*d_dist[i])/sum(normalizer) 
     else (p_prime*r_dist[i] + d_prob*d_dist[i])
     # for i_dist at timestep > d_maxtime is just the probability distribution of I->R transition
-    i_dist[(d_maxtime+1):r_maxtime] <- (r_prob-p_prime)*r_dist[i]
+    i_dist[(d_maxtime+1):r_maxtime] <- r_dist[i]
 
     # transition prob
     dim(transprob) <- r_maxtime
@@ -289,7 +289,7 @@ Test scenario where maximum dwell time of R\>D, normalization applied
 #| code-summary: "Model config"
 mod1_config <- list(
   rate = 0.1,
-  d_rate = 0.2,
+  d_rate = 0.3,
   beta = 0.4,
   S = 950, 
   I = 50,
@@ -627,7 +627,7 @@ Test scenario where maximum dwell time of R\>D, normalization not applied
 
 mod3_config <- list(
   rate = 0.1,
-  d_rate = 0.2,
+  d_rate = 0.3,
   beta = 0.4,
   S = 950, 
   I = 50,
@@ -761,7 +761,7 @@ transition_func <- function(t, state, param){
 desolveInitialValues <- c(
   S = mod3_config$S, 
   IR = mod3_config$r_prob*mod3_config$I,
-  ID = mod3_config$r_prob*mod3_config$I,
+  ID = mod3_config$d_prob*mod3_config$I,
   R = 0,
   D = 0
 )
